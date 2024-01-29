@@ -1259,6 +1259,12 @@ static int ip_setup_cork(struct sock *sk, struct inet_cork *cork,
 	if (!inetdev_valid_mtu(cork->fragsize))
 		return -ENETUNREACH;
 
+	cork->fragsize = ip_sk_use_pmtu(sk) ?
+			 dst_mtu(&rt->dst) : READ_ONCE(rt->dst.dev->mtu);
+
+	if (!inetdev_valid_mtu(cork->fragsize))
+		return -ENETUNREACH;
+
 	/*
 	 * setup for corking.
 	 */

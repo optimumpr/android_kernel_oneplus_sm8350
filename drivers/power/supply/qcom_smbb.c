@@ -562,7 +562,7 @@ static int smbb_usbin_get_property(struct power_supply *psy,
 		val->intval = chg->attr[ATTR_USBIN_IMAX];
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT_MAX:
-		val->intval = 2500000;
+		val->intval = 3800000;
 		break;
 	case POWER_SUPPLY_PROP_QUICK_CHARGE_TYPE:
 		val->intval = get_quick_charge_type(chg);
@@ -613,7 +613,7 @@ static int smbb_dcin_get_property(struct power_supply *psy,
 		val->intval = chg->attr[ATTR_DCIN_IMAX];
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT_MAX:
-		val->intval = 2500000;
+		val->intval = 3000000;
 		break;
 	default:
 		rc = -EINVAL;

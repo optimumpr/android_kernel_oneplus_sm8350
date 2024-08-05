@@ -491,6 +491,7 @@ int ath9k_htc_init_debug(struct ath_hw *ah)
 
 	priv->debug.debugfs_phy = debugfs_create_dir(KBUILD_MODNAME,
 					     priv->hw->wiphy->debugfsdir);
+
 	if (!priv->debug.debugfs_phy)
 		return -ENOMEM;
 

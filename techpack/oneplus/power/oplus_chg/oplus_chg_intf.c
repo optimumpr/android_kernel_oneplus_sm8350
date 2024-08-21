@@ -1478,11 +1478,7 @@ static int oplus_chg_intf_batt_get_prop(struct oplus_chg_mod *ocm,
 			pval->intval = oplus_chg_comm_get_batt_status(oplus_dev->comm_ocm);
 		} else {
 			if (!usb_online && !wls_online) {
-#ifdef 	CONFIG_OPLUS_CHG_OOS
 				pval->intval = POWER_SUPPLY_STATUS_DISCHARGING;
-#else
-				pval->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
-#endif
 			} else if ((oplus_chg_show_warp_logo_ornot() == 1) ||
 				   oplus_warp_ignore_event() ||
 				   oplus_dev->icon_debounce) {
@@ -1593,16 +1589,16 @@ static int oplus_chg_intf_batt_get_prop(struct oplus_chg_mod *ocm,
 		pval->intval = POWER_SUPPLY_TECHNOLOGY_LION;
 		break;
 	case OPLUS_CHG_PROP_CYCLE_COUNT:
-		pval->intval = 0;
+		pval->intval = oplus_gauge_get_batt_cc();
 		break;
 	case OPLUS_CHG_PROP_VOLTAGE_OCV:
 		pval->intval = 4000000;
 		break;
 	case OPLUS_CHG_PROP_CHARGE_CONTROL_LIMIT:
-		pval->intval = 2000000;
+		pval->intval = 3000000;
 		break;
 	case OPLUS_CHG_PROP_CHARGE_CONTROL_LIMIT_MAX:
-		pval->intval = 4000000;
+		pval->intval = 4500000;
 		break;
 	case OPLUS_CHG_PROP_CHARGE_COUNTER:
 		//pval->intval = chip->chg_ops->oplus_chg_get_charge_counter();

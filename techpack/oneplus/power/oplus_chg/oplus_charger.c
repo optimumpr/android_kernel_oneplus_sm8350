@@ -5141,7 +5141,7 @@ static int fb_notifier_callback(struct notifier_block *nb,
 		blank = *(int *)(evdata->data);
 		if (blank == MSM_DRM_BLANK_UNBLANK) {
 #ifndef OPLUS_CHG_OP_DEF
-			g_charger_chip->led_on = true;
+			g_charger_chip->led_on = false;
 			g_charger_chip->led_on_change = true;
 #else
 			cancel_delayed_work_sync(&g_charger_chip->led_power_on_report_work);

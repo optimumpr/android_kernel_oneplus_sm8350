@@ -869,7 +869,7 @@ int oplus_battery_get_property(struct power_supply *psy,
 			val->intval = chip->ui_soc * chip->batt_capacity_mah * 1000 / 100;
 			break;
 		case POWER_SUPPLY_PROP_CURRENT_MAX:
-			val->intval = 2000;
+			val->intval = 2600;
 			break;
 #endif
 #ifndef CONFIG_OPLUS_SDM670_CHARGER
@@ -3470,7 +3470,7 @@ int oplus_chg_parse_charger_dt(struct oplus_chg_chip *chip)
 	rc = of_property_read_u32(node, "qcom,batt_capacity_mah",
 			&chip->batt_capacity_mah);
 	if (rc < 0) {
-		chip->batt_capacity_mah = 2000;
+		chip->batt_capacity_mah = 3600;
 	}
 
 	chip->chg_ctrl_by_warp = of_property_read_bool(node, "qcom,chg_ctrl_by_warp");
@@ -8139,7 +8139,7 @@ static void oplus_chg_ibatt_check_and_set(struct oplus_chg_chip *chip)
 		recharge_volt = chip->limits.temp_normal_vfloat_mv- chip->limits.recharge_mv;
 		current_init = chip->limits.temp_normal_fastchg_current_ma;
 		if (chip->warp_project) {
-			current_limit = 2000;
+			current_limit = 3600;
 		} else {
 			current_limit = chip->batt_capacity_mah * 65 / 100;
 		}

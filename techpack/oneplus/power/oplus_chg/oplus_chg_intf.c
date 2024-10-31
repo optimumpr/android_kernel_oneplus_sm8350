@@ -1560,7 +1560,7 @@ static int oplus_chg_intf_batt_get_prop(struct oplus_chg_mod *ocm,
 		pval->intval = chip->vbatt_num;
 		break;
 	case OPLUS_CHG_PROP_MODEL_NAME:
-		pval->strval = "OP_4500mAh";
+		pval->strval = "OP_4400mAh";
 		break;
 	case OPLUS_CHG_PROP_TEMP:
 		if (oplus_dev->temp_debug_mode)
@@ -1595,17 +1595,17 @@ static int oplus_chg_intf_batt_get_prop(struct oplus_chg_mod *ocm,
 		pval->intval = 4000000;
 		break;
 	case OPLUS_CHG_PROP_CHARGE_CONTROL_LIMIT:
-		pval->intval = 3000000;
+		pval->intval = 2000000;
 		break;
 	case OPLUS_CHG_PROP_CHARGE_CONTROL_LIMIT_MAX:
-		pval->intval = 4500000;
+		pval->intval = 4000000;
 		break;
 	case OPLUS_CHG_PROP_CHARGE_COUNTER:
 		//pval->intval = chip->chg_ops->oplus_chg_get_charge_counter();
 	pval->intval = -ENODATA; //BSP,temp fix xts
 		break;
 	case OPLUS_CHG_PROP_CHARGE_FULL_DESIGN:
-		pval->intval = 4500000;
+		pval->intval = 4400000;
 		break;
 	case OPLUS_CHG_PROP_CHARGE_FULL:
 		pval->intval = chip->batt_fcc * 1000;

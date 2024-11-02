@@ -116,7 +116,7 @@ static struct oplus_chg_chip *g_charger_chip = NULL;
 #define OPLUS_CHG_UPDATE_INTERVAL	round_jiffies_relative(msecs_to_jiffies(OPLUS_CHG_UPDATE_INTERVAL_SEC*1000))
 #endif
 
-#define OPLUS_CHG_DEFAULT_CHARGING_CURRENT	3512
+#define OPLUS_CHG_DEFAULT_CHARGING_CURRENT	512
 
 int enable_charger_log = 2;
 int charger_abnormal_log = 0;

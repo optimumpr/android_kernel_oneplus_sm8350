@@ -1523,7 +1523,7 @@ static int oplus_chg_intf_batt_get_prop(struct oplus_chg_mod *ocm,
 #endif
 		break;
 	case OPLUS_CHG_PROP_CURRENT_MAX:
-		pval->intval = 7000000;
+		pval->intval = 3000000;
 		break;
 	case OPLUS_CHG_PROP_TEMP_REGION:
 		pval->intval = OPLUS_CHG_BATT_TEMP_NORMAL;
@@ -1598,7 +1598,7 @@ static int oplus_chg_intf_batt_get_prop(struct oplus_chg_mod *ocm,
 		pval->intval = 2000000;
 		break;
 	case OPLUS_CHG_PROP_CHARGE_CONTROL_LIMIT_MAX:
-		pval->intval = 4000000;
+		pval->intval = 3000000;
 		break;
 	case OPLUS_CHG_PROP_CHARGE_COUNTER:
 		//pval->intval = chip->chg_ops->oplus_chg_get_charge_counter();

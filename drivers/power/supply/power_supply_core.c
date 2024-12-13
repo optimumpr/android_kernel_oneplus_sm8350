@@ -722,6 +722,10 @@ void power_supply_put_battery_info(struct power_supply *psy,
 	int i;
 
 	for (i = 0; i < POWER_SUPPLY_OCV_TEMP_MAX; i++) {
+		/* Out of capacity tables */
+		if (!info->ocv_table[i])
+			break;
+
 		if (info->ocv_table[i])
 			devm_kfree(&psy->dev, info->ocv_table[i]);
 	}

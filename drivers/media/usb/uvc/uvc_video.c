@@ -1880,6 +1880,10 @@ static int uvc_video_start_transfer(struct uvc_streaming *stream,
 			if (ep == NULL)
 				continue;
 
+		/* Reject broken descriptors. */
+		if (usb_endpoint_maxp(&ep->desc) == 0)
+			return -EIO;
+
 			/* Check if the bandwidth is high enough. */
 			psize = uvc_endpoint_max_bpi(stream->dev->udev, ep);
 			if (psize >= bandwidth && psize <= best_psize) {

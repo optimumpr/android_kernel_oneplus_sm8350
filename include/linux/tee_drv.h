@@ -178,7 +178,7 @@ void tee_device_unregister(struct tee_device *teedev);
  * @offset:	offset of buffer in user space
  * @pages:	locked pages from userspace
  * @num_pages:	number of locked pages
- * @dmabuf:	dmabuf used to for exporting to user space
+ * @refcount:	reference counter
  * @flags:	defined by TEE_SHM_* in tee_drv.h
  * @id:		unique id of a shared memory object on this device
  *
@@ -193,7 +193,7 @@ struct tee_shm {
 	void *kaddr;
 	size_t size;
 	unsigned int offset;
-	struct page **pages;
+	refcount_t refcount;
 	size_t num_pages;
 	struct dma_buf *dmabuf;
 	u32 flags;

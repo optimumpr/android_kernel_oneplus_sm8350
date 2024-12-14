@@ -1040,6 +1040,7 @@ static int btmtksdio_runtime_suspend(struct device *dev)
 	bdev = sdio_get_drvdata(func);
 	if (!bdev)
 		return 0;
+	sdio_set_host_pm_flags(func, MMC_PM_KEEP_POWER);
 
 	sdio_claim_host(bdev->func);
 

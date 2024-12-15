@@ -52,6 +52,8 @@ static int psci_acpi_cpu_init_idle(unsigned int cpu)
 	int i, count;
 	struct acpi_lpi_state *lpi;
 	struct acpi_processor *pr = per_cpu(processors, cpu);
+	if (unlikely(!pr || !pr->flags.has_lpi))
+		return -EINVAL;
 
 	/*
 	 * If the PSCI cpu_suspend function hook has not been initialized
@@ -59,9 +61,6 @@ static int psci_acpi_cpu_init_idle(unsigned int cpu)
 	 */
 	if (!psci_ops.cpu_suspend)
 		return -EOPNOTSUPP;
-
-	if (unlikely(!pr || !pr->flags.has_lpi))
-		return -EINVAL;
 
 	count = pr->power.count - 1;
 	if (count <= 0)

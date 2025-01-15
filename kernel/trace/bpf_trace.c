@@ -650,7 +650,7 @@ BPF_CALL_1(bpf_send_signal, u32, sig)
 	if (unlikely(!nmi_uaccess_okay()))
 		return -EPERM;
 
-	if (irqs_disabled()) {
+	if (!preemptible()) {
 		/* Do an early check on signal validity. Otherwise,
 		 * the error is lost in deferred irq_work.
 		 */

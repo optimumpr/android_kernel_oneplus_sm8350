@@ -213,6 +213,11 @@ static inline void qdisc_run_end(struct Qdisc *qdisc)
 	write_seqcount_end(&qdisc->running);
 	if (qdisc->flags & TCQ_F_NOLOCK) {
 		spin_unlock(&qdisc->seqlock);
+		/* spin_unlock() only has store-release semantic. The unlock
+		 * and test_bit() ordering is a store-load ordering, so a full
+		 * memory barrier is needed here.
+		 */
+		smp_mb();
 
 		if (unlikely(test_bit(__QDISC_STATE_MISSED,
 				      &qdisc->state))) {

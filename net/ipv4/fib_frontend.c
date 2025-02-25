@@ -839,6 +839,8 @@ static int rtm_to_fib_config(struct net *net, struct sk_buff *skb,
 			       "Nexthop configuration can not contain both GATEWAY and VIA");
 		return -EINVAL;
 	}
+	if (!cfg->fc_table)
+		cfg->fc_table = RT_TABLE_MAIN;
 
 	return 0;
 errout:

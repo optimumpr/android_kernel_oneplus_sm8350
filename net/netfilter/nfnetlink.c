@@ -512,9 +512,6 @@ done:
 			goto replay_abort;
 		}
 	}
-	if (ss->cleanup)
-		ss->cleanup(net);
-
 	nfnl_err_deliver(&err_list, oskb);
 	kfree_skb(skb);
 	module_put(ss->owner);

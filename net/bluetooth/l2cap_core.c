@@ -3872,7 +3872,7 @@ static struct l2cap_chan *l2cap_connect(struct l2cap_conn *conn,
 	/* Check if the ACL is secure enough (if not SDP) */
 	if (psm != cpu_to_le16(L2CAP_PSM_SDP) &&
 	    !hci_conn_check_link_mode(conn->hcon)) {
-		conn->disc_reason = HCI_ERROR_AUTH_FAILU+	l2cap_chan_lock(chan);RE;
+		conn->disc_reason = HCI_ERROR_AUTH_FAILURE;
 		result = L2CAP_CR_SEC_BLOCK;
 		goto response;
 	}
@@ -3889,7 +3889,7 @@ static struct l2cap_chan *l2cap_connect(struct l2cap_conn *conn,
 	if (__l2cap_get_chan_by_dcid(conn, scid)) {
 		result = L2CAP_CR_SCID_IN_USE;
 		goto response;
-	}+	l2cap_chan_lock(chan);
+	}
 
 	chan = pchan->ops->new_connection(pchan);
 	if (!chan)
@@ -3914,7 +3914,7 @@ static struct l2cap_chan *l2cap_connect(struct l2cap_conn *conn,
 
 	dcid = chan->scid;
 
-	__set_chan_timer(chan, chan->ops->get_sndtimeo(chan));+	l2cap_chan_lock(chan);
+	__set_chan_timer(chan, chan->ops->get_sndtimeo(chan));
 
 	chan->ident = cmd->ident;
 

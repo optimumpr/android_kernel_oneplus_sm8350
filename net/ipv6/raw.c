@@ -1257,7 +1257,6 @@ static void raw6_destroy(struct sock *sk)
 	ip6_flush_pending_frames(sk);
 	release_sock(sk);
 
-	inet6_destroy_sock(sk);
 }
 
 static int rawv6_init_sk(struct sock *sk)

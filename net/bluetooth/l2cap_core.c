@@ -3872,7 +3872,7 @@ static struct l2cap_chan *l2cap_connect(struct l2cap_conn *conn,
 	/* Check if the ACL is secure enough (if not SDP) */
 	if (psm != cpu_to_le16(L2CAP_PSM_SDP) &&
 	    !hci_conn_check_link_mode(conn->hcon)) {
-		conn->disc_reason = HCI_ERROR_AUTH_FAILURE;
+		conn->disc_reason = HCI_ERROR_AUTH_FAILU+	l2cap_chan_lock(chan);RE;
 		result = L2CAP_CR_SEC_BLOCK;
 		goto response;
 	}
@@ -3889,7 +3889,7 @@ static struct l2cap_chan *l2cap_connect(struct l2cap_conn *conn,
 	if (__l2cap_get_chan_by_dcid(conn, scid)) {
 		result = L2CAP_CR_SCID_IN_USE;
 		goto response;
-	}
+	}+	l2cap_chan_lock(chan);
 
 	chan = pchan->ops->new_connection(pchan);
 	if (!chan)
@@ -3914,7 +3914,7 @@ static struct l2cap_chan *l2cap_connect(struct l2cap_conn *conn,
 
 	dcid = chan->scid;
 
-	__set_chan_timer(chan, chan->ops->get_sndtimeo(chan));
+	__set_chan_timer(chan, chan->ops->get_sndtimeo(chan));+	l2cap_chan_lock(chan);
 
 	chan->ident = cmd->ident;
 
@@ -4023,6 +4023,9 @@ static int l2cap_connect_create_rsp(struct l2cap_conn *conn,
 	dcid   = __le16_to_cpu(rsp->dcid);
 	result = __le16_to_cpu(rsp->result);
 	status = __le16_to_cpu(rsp->status);
+	if (result == L2CAP_CR_SUCCESS && (dcid < L2CAP_CID_DYN_START ||
+					   dcid > L2CAP_CID_DYN_END))
+		return -EPROTO;
 
 	BT_DBG("dcid 0x%4.4x scid 0x%4.4x result 0x%2.2x status 0x%2.2x",
 	       dcid, scid, result, status);
@@ -4054,6 +4057,11 @@ static int l2cap_connect_create_rsp(struct l2cap_conn *conn,
 
 	switch (result) {
 	case L2CAP_CR_SUCCESS:
+		if (__l2cap_get_chan_by_dcid(conn, dcid)) {
+			err = -EBADSLT;
+			break;
+		}
+
 		l2cap_state_change(chan, BT_CONFIG);
 		chan->ident = 0;
 		chan->dcid = dcid;
@@ -4378,8 +4386,9 @@ static inline int l2cap_disconnect_req(struct l2cap_conn *conn,
 	l2cap_send_cmd(conn, cmd->ident, L2CAP_DISCONN_RSP, sizeof(rsp), &rsp);
 
 	chan->ops->set_shutdown(chan);
-
+	l2cap_chan_unlock(chan);
 	mutex_lock(&conn->chan_lock);
+	l2cap_chan_lock(chan);
 	l2cap_chan_del(chan, ECONNRESET);
 	mutex_unlock(&conn->chan_lock);
 	chan->ops->close(chan);
@@ -4417,7 +4426,9 @@ static inline int l2cap_disconnect_rsp(struct l2cap_conn *conn,
 		return 0;
 	}
 
+	l2cap_chan_unlock(chan);
 	mutex_lock(&conn->chan_lock);
+	l2cap_chan_lock(chan);
 	l2cap_chan_del(chan, 0);
 	mutex_unlock(&conn->chan_lock);
 

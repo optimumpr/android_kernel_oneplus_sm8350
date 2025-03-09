@@ -122,14 +122,6 @@ retry:
 		u16 gso_size = __virtio16_to_cpu(little_endian, hdr->gso_size);
 		struct skb_shared_info *shinfo = skb_shinfo(skb);
 
-	/* UFO may not include transport header in gso_size. */
-		if (gso_type & SKB_GSO_UDP)
-			nh_off -= thlen;
-
-		/* Kernel has a special handling for GSO_BY_FRAGS. */
-		if (gso_size == GSO_BY_FRAGS)
-			return -EINVAL;
-
 		/* Too small packets are not really GSO ones. */
 		if (skb->len - p_off > gso_size) {
 			shinfo->gso_size = gso_size;

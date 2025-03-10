@@ -5192,26 +5192,6 @@ __acquires(bitlock)
 	return ret;
 }
 
-static ext4_grpblk_t ext4_last_grp_cluster(struct super_block *sb,
-					   ext4_group_t grp)
-{
-	unsigned long nr_clusters_in_group;
-
-	if (grp < (ext4_get_groups_count(sb) - 1))
-		nr_clusters_in_group = EXT4_CLUSTERS_PER_GROUP(sb);
-	else
-		nr_clusters_in_group = (ext4_blocks_count(EXT4_SB(sb)->s_es) -
-					ext4_group_first_block_no(sb, grp))
-				       >> EXT4_CLUSTER_BITS(sb);
-
-	return nr_clusters_in_group - 1;
-}
-
-static bool ext4_trim_interrupted(void)
-{
-	return fatal_signal_pending(current) || freezing(current);
-}
-
 static int ext4_try_to_trim_range(struct super_block *sb,
 		struct ext4_buddy *e4b, ext4_grpblk_t start,
 		ext4_grpblk_t max, ext4_grpblk_t minblocks)

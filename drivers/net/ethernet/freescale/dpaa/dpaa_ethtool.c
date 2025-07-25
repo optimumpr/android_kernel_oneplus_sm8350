@@ -512,8 +512,10 @@ static int dpaa_get_ts_info(struct net_device *net_dev,
 	if (ptp_node)
 		ptp_dev = of_find_device_by_node(ptp_node);
 
-	if (ptp_dev)
+	if (ptp_dev) {
 		ptp = platform_get_drvdata(ptp_dev);
+		put_device(&ptp_dev->dev);
+	}
 
 	if (ptp)
 		info->phc_index = ptp->phc_index;

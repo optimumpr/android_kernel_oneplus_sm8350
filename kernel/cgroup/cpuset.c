@@ -2184,6 +2184,7 @@ static void cpuset_cancel_attach(struct cgroup_taskset *tset)
 	struct cpuset *cs;
 
 	cgroup_taskset_first(tset, &css);
+	cs = css_cs(css);
 
 	percpu_down_write(&cpuset_rwsem);
 	cs->attach_in_progress--;

@@ -4628,7 +4628,7 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
 {
 	struct fib_nh_common *nhc;
 	struct in_device *in_dev;
-	struct neighbour *neigh;
+	struct neighbour *neigh = NULL;
 	struct net_device *dev;
 	struct fib_result res;
 	struct flowi4 fl4;

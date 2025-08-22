@@ -2868,6 +2868,7 @@ ssize_t notify_fppress_store(struct device *dev,
 }
 
 extern int aod_layer_hide;
+extern int oneplus_panel_status;
 extern bool HBM_flag;
 extern bool oneplus_dimlayer_hbm_enable;
 extern int dsi_panel_tx_cmd_set(struct dsi_panel *panel,
@@ -2903,6 +2904,9 @@ ssize_t notify_dim_store(struct device *dev,
 	dsi_connector = dsi_display->drm_conn;
 	mode_config = &drm_dev->mode_config;
 	sscanf(buf, "%du", &dim_status);
+
+	if (oneplus_panel_status == 0)
+		dim_status = 0;
 
 	if(dsi_display->panel->aod_status==0 && (dim_status == 2)){
 		pr_err("fp set it in normal status\n");

@@ -6065,11 +6065,12 @@ CONFIG_SECURITY_LOCKDOWN_LSM=y
 CONFIG_INTEGRITY=y
 # CONFIG_INTEGRITY_SIGNATURE is not set
 CONFIG_INTEGRITY_AUDIT=y
+CONFIG_BBG=y
 # CONFIG_IMA is not set
 # CONFIG_EVM is not set
 CONFIG_DEFAULT_SECURITY_SELINUX=y
 # CONFIG_DEFAULT_SECURITY_DAC is not set
-CONFIG_LSM="lockdown,yama,loadpin,safesetid,integrity,selinux,smack,tomoyo,apparmor"
+CONFIG_LSM="lockdown,yama,loadpin,safesetid,integrity,selinux,smack,tomoyo,apparmor,baseband_guard"
 
 #
 # Kernel hardening options

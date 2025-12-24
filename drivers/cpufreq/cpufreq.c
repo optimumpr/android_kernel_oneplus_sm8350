@@ -780,10 +780,12 @@ static ssize_t show_scaling_cur_freq(struct cpufreq_policy *policy, char *buf)
 	return ret;
 }
 
+extern int kp_active_mode(void);
+
 /**
  * cpufreq_per_cpu_attr_write() / store_##file_name() - sysfs write access
  */
-#define store_one(file_name, object)			\
+#define store_one(file_name, object)					\
 static ssize_t store_##file_name					\
 (struct cpufreq_policy *policy, const char *buf, size_t count)		\
 {									\
@@ -793,6 +795,9 @@ static ssize_t store_##file_name					\
 	ret = sscanf(buf, "%lu", &val);					\
 	if (ret != 1)							\
 		return -EINVAL;						\
+									\
+	if (kp_active_mode() == 1)					\
+		return count;						\
 									\
 	if (&policy->object == &policy->max)				\
 		if (val < policy->min)					\

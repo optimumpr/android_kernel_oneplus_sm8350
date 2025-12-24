@@ -114,6 +114,7 @@ static unsigned int top_load[CLUSTER_MAX];
 static unsigned int curr_cap[CLUSTER_MAX];
 static bool max_cap_cpus[NR_CPUS];
 static atomic_t game_status_pid;
+extern int kp_active_mode(void);
 #endif
 static bool ready_for_freq_updates;
 
@@ -221,6 +222,9 @@ static int set_cpu_min_freq(const char *buf, const struct kernel_param *kp)
 		}
 		ready_for_freq_updates = true;
 	}
+
+	if (kp_active_mode() == 1)
+	  return 0;
 
 	while ((cp = strpbrk(cp + 1, " :")))
 		ntokens++;
@@ -341,6 +345,9 @@ static int set_cpu_max_freq(const char *buf, const struct kernel_param *kp)
 		}
 		ready_for_freq_updates = true;
 	}
+
+	if (kp_active_mode() == 1)
+	  return 0;
 
 	while ((cp = strpbrk(cp + 1, " :")))
 		ntokens++;

@@ -277,7 +277,6 @@
 &firmware {
 	scm {
 		compatible = "qcom,scm";
-		qcom,dload-mode = <&tcsr 0x13000>;
 	};
 
 	android {
@@ -2120,11 +2119,6 @@
 			reg = <0x65c 0x4>;
 		};
 
-		dload_type@1c {
-			compatible = "qcom,msm-imem-dload-type";
-			reg = <0x1c 0x4>;
-		};
-
 		boot_stats@6b0 {
 			compatible = "qcom,msm-imem-boot_stats";
 			reg = <0x6b0 0x20>;
@@ -2144,15 +2138,6 @@
 			compatible = "qcom,msm-imem-pil-disable-timeout";
 			reg = <0x6dc 0x4>;
 		};
-
-		diag_dload@c8 {
-			compatible = "qcom,msm-imem-diag-dload";
-			reg = <0xc8 0xc8>;
-		};
-	};
-
-	dload_mode {
-		compatible = "qcom,dload-mode";
 	};
 
 	tlmm: pinctrl@f000000 {

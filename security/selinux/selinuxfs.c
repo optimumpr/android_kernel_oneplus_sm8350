@@ -163,12 +163,6 @@ static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 
 	old_value = enforcing_enabled(state);
 	if (new_value != old_value) {
-#ifdef CONFIG_BBG
-	if (!new_value && bbg_process_setpermissive()) {
-		length = -EACCES;
-		goto out;
-	}
-#endif
 		length = avc_has_perm(&selinux_state,
 				      current_sid(), SECINITSID_SECURITY,
 				      SECCLASS_SECURITY, SECURITY__SETENFORCE,

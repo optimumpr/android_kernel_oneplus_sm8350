@@ -372,7 +372,7 @@ static int olaps_cmp(const void *a, const void *b)
 
 static void fastrpc_get_buff_overlaps(struct fastrpc_invoke_ctx *ctx)
 {
-	u64 max_end = 0;
+	u64 ion_buf_end_pos = 0, non_ion_buf_end_pos = 0;
 	int i;
 
 	for (i = 0; i < ctx->nbufs; ++i) {
@@ -384,14 +384,18 @@ static void fastrpc_get_buff_overlaps(struct fastrpc_invoke_ctx *ctx)
 	sort(ctx->olaps, ctx->nbufs, sizeof(*ctx->olaps), olaps_cmp, NULL);
 
 	for (i = 0; i < ctx->nbufs; ++i) {
-		/* Falling inside previous range */
-		if (ctx->olaps[i].start < max_end) {
-			ctx->olaps[i].mstart = max_end;
-			ctx->olaps[i].mend = ctx->olaps[i].end;
-			ctx->olaps[i].offset = max_end - ctx->olaps[i].start;
+		/* Separate ION and non-ION buffers; fd <= 0 indicates non-ION */
+		u64 *last_buf_end = (ctx->args[ctx->olaps[i].raix].fd <= 0) ?
+				&non_ion_buf_end_pos : &ion_buf_end_pos;
 
-			if (ctx->olaps[i].end > max_end) {
-				max_end = ctx->olaps[i].end;
+		if (ctx->olaps[i].start < *last_buf_end) {
+			/* Overlap detected within same buffer type */
+			ctx->olaps[i].mstart = *last_buf_end;
+			ctx->olaps[i].mend = ctx->olaps[i].end;
+			ctx->olaps[i].offset = *last_buf_end - ctx->olaps[i].start;
+
+			if (ctx->olaps[i].end > *last_buf_end) {
+				*last_buf_end = ctx->olaps[i].end;
 			} else {
 				ctx->olaps[i].mend = 0;
 				ctx->olaps[i].mstart = 0;
@@ -401,7 +405,7 @@ static void fastrpc_get_buff_overlaps(struct fastrpc_invoke_ctx *ctx)
 			ctx->olaps[i].mend = ctx->olaps[i].end;
 			ctx->olaps[i].mstart = ctx->olaps[i].start;
 			ctx->olaps[i].offset = 0;
-			max_end = ctx->olaps[i].end;
+			*last_buf_end = ctx->olaps[i].end;
 		}
 	}
 }
@@ -798,7 +802,22 @@ static int fastrpc_get_args(u32 kernel, struct fastrpc_invoke_ctx *ctx)
 			pg_end = ((ctx->args[i].ptr + len - 1) & PAGE_MASK) >>
 				  PAGE_SHIFT;
 			pages[i].size = (pg_end - pg_start + 1) * PAGE_SIZE;
-
+			/*
+			 * Check for page range overflow and validate page
+			 * range is not greater than map buffer range.
+			 * This prevents potential buffer overflow
+			 * and memory corruption that could be exploited.
+			 */
+			if (pages[i].addr > (ULLONG_MAX - pages[i].size) ||
+			   (pages[i].addr + pages[i].size) >
+					(ctx->maps[i]->phys + ctx->maps[i]->size)) {
+				err = -EFAULT;
+				dev_err(dev,
+					"Invalid buffer addr 0x%llx len 0x%llx IPA 0x%llx size 0x%llx fd %d\n",
+					ctx->args[i].ptr, len, ctx->maps[i]->phys,
+					ctx->maps[i]->size, ctx->maps[i]->fd);
+				goto bail;
+			}
 		} else {
 
 			if (ctx->olaps[oix].offset == 0) {

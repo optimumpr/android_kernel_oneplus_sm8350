@@ -61,13 +61,13 @@ static struct nvmem_cell *nvmem_cell;
  * There is no API from TZ to re-enable the registers.
  * So the SDI cannot be re-enabled when it already by-passed.
  */
-static int download_mode = 0;
+static int download_mode = 1;
 static struct kobject dload_kobj;
 
 static int in_panic;
 static int dload_type = SCM_DLOAD_FULLDUMP;
 static void *dload_mode_addr;
-static bool dload_mode_enabled = false;
+static bool dload_mode_enabled;
 static void *emergency_dload_mode_addr;
 
 static bool force_warm_reboot;
@@ -164,7 +164,6 @@ static bool get_dload_mode(void)
 	return dload_mode_enabled;
 }
 
-#if 0
 static void enable_emergency_dload_mode(void)
 {
 	if (emergency_dload_mode_addr) {
@@ -187,7 +186,6 @@ static void enable_emergency_dload_mode(void)
 
 	qcom_scm_set_download_mode(SCM_EDLOAD_MODE, tcsr_boot_misc_detect ?: 0);
 }
-#endif
 
 static int dload_set(const char *val, const struct kernel_param *kp)
 {
@@ -475,6 +473,8 @@ static void msm_restart_prepare(const char *cmd)
 			if (!ret)
 				__raw_writel(0x6f656d00 | (code & 0xff),
 					     restart_reason);
+		} else if (!strncmp(cmd, "edl", 3)) {
+			enable_emergency_dload_mode();
 		} else {
 #if IS_ENABLED(TECHPACK_ONEPLUS)
 			oem_msm_restart_prepare(cmd, &reason);

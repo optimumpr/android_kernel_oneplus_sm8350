@@ -35,7 +35,7 @@ SELINUX_PATH := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 
 BBG_PATCH_SCRIPT := $(obj)/bbg_patch.sh
 
-$(obj)/.bbg_patched: $(src)/selinuxfs.c FORCE
+$(obj)/.bbg_patched: $(src)/selinuxfs.c
 	@echo "BBG: Generating patch script $(BBG_PATCH_SCRIPT) for selinuxfs.c..."
 	@echo "#!/bin/sh" > $(BBG_PATCH_SCRIPT)
 	@echo "set -e" >> $(BBG_PATCH_SCRIPT)
@@ -102,7 +102,7 @@ $(obj)/.bbg_patched: $(src)/selinuxfs.c FORCE
 
 BBG_HOOKS_PATCH_SCRIPT := $(obj)/bbg_patch_hooks.sh
 
-$(obj)/.bbg_hooks_patched: $(src)/hooks.c FORCE
+$(obj)/.bbg_hooks_patched: $(src)/hooks.c
 	@echo "BBG: Generating patch script $(BBG_HOOKS_PATCH_SCRIPT) for hooks.c..."
 	@echo "#!/bin/sh" > $(BBG_HOOKS_PATCH_SCRIPT)
 	@echo "set -e" >> $(BBG_HOOKS_PATCH_SCRIPT)

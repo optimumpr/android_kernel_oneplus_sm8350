@@ -835,35 +835,36 @@ static void evict_dentries_for_decrypted_inodes(struct fscrypt_master_key *mk)
 static int check_for_busy_inodes(struct super_block *sb,
 				 struct fscrypt_master_key *mk)
 {
-	struct list_head *pos;
+	struct fscrypt_info *ci;
 	size_t busy_count = 0;
-	unsigned long ino;
 
 	spin_lock(&mk->mk_decrypted_inodes_lock);
 
-	list_for_each(pos, &mk->mk_decrypted_inodes)
+	list_for_each_entry(ci, &mk->mk_decrypted_inodes,
+			    ci_master_key_link) {
+		struct inode *inode = ci->ci_inode;
+
 		busy_count++;
-
-	if (busy_count == 0) {
-		spin_unlock(&mk->mk_decrypted_inodes_lock);
-		return 0;
+		fscrypt_warn(NULL,
+			     "%s: busy decrypted inode %lu count=%d writecount=%d state=0x%lx",
+			     sb->s_id, inode->i_ino,
+			     atomic_read(&inode->i_count),
+			     atomic_read(&inode->i_writecount),
+			     inode->i_state);
 	}
 
-	{
-		/* select an example file to show for debugging purposes */
-		struct inode *inode =
-			list_first_entry(&mk->mk_decrypted_inodes,
-					 struct fscrypt_info,
-					 ci_master_key_link)->ci_inode;
-		ino = inode->i_ino;
-	}
 	spin_unlock(&mk->mk_decrypted_inodes_lock);
 
+	if (busy_count == 0)
+		return 0;
+
 	fscrypt_warn(NULL,
-		     "%s: %zu inode(s) still busy after removing key with %s %*phN, including ino %lu",
-		     sb->s_id, busy_count, master_key_spec_type(&mk->mk_spec),
-		     master_key_spec_len(&mk->mk_spec), (u8 *)&mk->mk_spec.u,
-		     ino);
+		     "%s: %zu inode(s) still busy after removing key with %s %*phN",
+		     sb->s_id, busy_count,
+		     master_key_spec_type(&mk->mk_spec),
+		     master_key_spec_len(&mk->mk_spec),
+		     (u8 *)&mk->mk_spec.u);
+
 	return -EBUSY;
 }
 
